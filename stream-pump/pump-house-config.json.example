@@ -1,0 +1,13 @@
+{
+  "pumps_roster_json":"pumps-roster.json.example",
+  "port": 8079,
+  "streams": [
+      {
+	  "name": "Test Pull Video Source",
+	  "enabled": true,
+	  "type": "mmsh_pull",
+	  "source_options": {"host": "mystream.credil.org", "port": "8080", "path": "/streams/hello"},
+	  "path": "pulled_video"
+      }
+  ]
+}
