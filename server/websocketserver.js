@@ -2,10 +2,26 @@
 var WebSocketServer = require('ws').Server
   , wss = new WebSocketServer({ port: 4502 });
 
-var clients = [];
+var clients = {};
+var clientIDCounter = 0;
+function sendToClients(msg) {
+    for (key in clients) {
+        try{
+            clients[key].send(msg);
+        } catch (e) {
+            sys.debug("Failed to send message to client " + key + ". Removing from colleciton");
+            delete clients[key];
+        }
+    }
+}
+
 wss.on('connection', function (ws) {
-    sys.debug("connected to client");
-    clients.push(ws);
+    debugger;
+    ws.id = clientIDCounter++;
+    sys.debug("connected to client " + ws.id);
+
+    // remember the client by associating the socket.id with the socket
+    clients[ws.id] = ws;
 
     ws.on('message', function (message) {
         sys.debug("recieved data");
@@ -13,24 +29,35 @@ wss.on('connection', function (ws) {
 
         // handle incoming data
         // send data to ALL clients whenever ANY client send up data
-        for (var i = 0 ; i < clients.length ; i++) {
-            clients[i].send(message);
-        }
+        sendToClients(message);
     });
 
     ws.on("close", function () {
         debugger;
+
+        sys.debug("Removing client " + ws.id);
+        delete clients[ws.id];
+
         // emitted when server or client closes connection
         sys.debug("close");
     });
-
-    ws.send('something');
 });
+
+sys.debug("Running image listener at 4502");
+
+
+
 
 var connect = require('connect');
 connect.createServer(
     connect.static(__dirname)
 ).listen(4580);
+
+sys.debug("Running test listener at 4580");
+
+
+
+
 
 var express = require("express");
 
@@ -51,15 +78,11 @@ app.get('/api', function (req, res) {
 app.post('/image', function (req, res) {
     debugger;
     var product;
-    console.log("POST: ");
-    console.log(req.body);
     
     // handle incoming data
     // send data to ALL clients whenever ANY client send up data
     var imageData = req.body;
-    for (var i = 0 ; i < clients.length ; i++) {
-        clients[i].send(imageData.img);
-    }
+    sendToClients(imageData.img);
 
     return res.send();
 });
@@ -67,3 +90,4 @@ app.post('/image', function (req, res) {
 // Launch server
 
 app.listen(4242);
+sys.debug("Running image receiver at 4242");

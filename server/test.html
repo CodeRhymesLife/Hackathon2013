@@ -4,9 +4,12 @@
     <div id="msg"></div>
     <div id="log"></div>
     <script type="text/javascript">
+        var debug = false;
+
+
         var img;
 
-        var domain = "glimpse.cloudapp.net";
+        var domain = debug ? "localhost" : "glimpse.cloudapp.net";
         // Web socket connection stuff is next...	
         if ('WebSocket' in window) {
             connect('ws://' + domain + ':4502/');
