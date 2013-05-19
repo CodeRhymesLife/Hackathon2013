@@ -167,10 +167,11 @@ namespace PhoneApp
         private void CaptureVideoPics(CaptureSource source)
         {
             // timer interval specified as 1 second
-            newTimer.Interval = TimeSpan.FromMilliseconds(1000 / 24); // 24 times a second
+            var fps = 24;
+            newTimer.Interval = TimeSpan.FromMilliseconds(1000 / fps); // 24 times a second
             // Sub-routine OnTimerTick will be called at every second
             newTimer.Tick += (sender, args) => 
-            {
+            {                
                 if (!capturingScreenshots)
                 {
                     capturingScreenshots = true;
@@ -183,12 +184,13 @@ namespace PhoneApp
             captureSource.CaptureFailed += new EventHandler<ExceptionRoutedEventArgs>(CaptureSource_CaptureFailed);
         }
 
+        private int quality = 15;
         void CaptureSource_CaptureImageCompleted(object sender, CaptureImageCompletedEventArgs e)
         {
             ImageBrush capturedImage = new ImageBrush();
             WriteableBitmap map = e.Result;
             var targetStream = new MemoryStream();
-            map.SaveJpeg(targetStream, 640, 480, 0, 25);
+            map.SaveJpeg(targetStream, 640, 480, 0, quality);
             
             CaptureSource s = (CaptureSource)sender;
 
