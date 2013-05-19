@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Text;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 
 
@@ -44,8 +45,11 @@ namespace PhoneApp
         private enum ButtonState { Initialized, Ready, Recording, Playback, Paused, NoChange, CameraNotSupported };
         private ButtonState currentAppState;
         private Thread picCapturer;
-        private bool captureScreenshots;
+        private bool capturingScreenshots;
         private ThreadStart start;
+
+        // creating timer instance
+        DispatcherTimer newTimer = new DispatcherTimer();
 
         // Constructor
         public MainPage()
@@ -141,10 +145,9 @@ namespace PhoneApp
                     captureSource.Start();
                     
                     //Variables for image capturing
-                    captureScreenshots = true;
-                    start = delegate { CaptureVideoPics(captureScreenshots, captureSource); };
+                    start = delegate { CaptureVideoPics(captureSource); };
                     picCapturer = new Thread(start);
-                    Dispatcher.BeginInvoke(() => CaptureVideoPics(captureScreenshots,captureSource));
+                    Dispatcher.BeginInvoke(() => CaptureVideoPics(captureSource));
                 }
 
                 // Set the button states and the message.
@@ -161,11 +164,23 @@ namespace PhoneApp
             }
         }
 
-        private void CaptureVideoPics(bool captureScreenshots,CaptureSource source)
+        private void CaptureVideoPics(CaptureSource source)
         {
+            // timer interval specified as 1 second
+            newTimer.Interval = TimeSpan.FromMilliseconds(1000 / 24); // 24 times a second
+            // Sub-routine OnTimerTick will be called at every second
+            newTimer.Tick += (sender, args) => 
+            {
+                if (!capturingScreenshots)
+                {
+                    capturingScreenshots = true;
+                    source.CaptureImageAsync();
+                }
+            };
+            // starting the timer
+            newTimer.Start();
             captureSource.CaptureImageCompleted += new EventHandler<CaptureImageCompletedEventArgs>(CaptureSource_CaptureImageCompleted);
             captureSource.CaptureFailed += new EventHandler<ExceptionRoutedEventArgs>(CaptureSource_CaptureFailed);
-            source.CaptureImageAsync();            
         }
 
         void CaptureSource_CaptureImageCompleted(object sender, CaptureImageCompletedEventArgs e)
@@ -173,7 +188,7 @@ namespace PhoneApp
             ImageBrush capturedImage = new ImageBrush();
             WriteableBitmap map = e.Result;
             var targetStream = new MemoryStream();
-            map.SaveJpeg(targetStream,480,640,0,100);
+            map.SaveJpeg(targetStream, 640, 480, 0, 25);
             
             CaptureSource s = (CaptureSource)sender;
 
@@ -182,7 +197,7 @@ namespace PhoneApp
             string imageStream = Convert.ToBase64String(targetStream.ToArray());
 
             // TODO: CHANGE THIS TO YOUR LOCAL MACHINE IP
-            string domain = "169.254.80.80";
+            string domain = "glimpse.cloudapp.net";
             int port = 4242;
             string url = string.Format("http://{0}:{1}/image", domain, port);
 
@@ -190,10 +205,7 @@ namespace PhoneApp
 
             Post(url, postBody, webResponseCallback);
 
-            if (captureScreenshots)
-            {
-                s.CaptureImageAsync();
-            }
+            capturingScreenshots = false;
         }
 
         void CaptureSource_CaptureFailed(object sender, ExceptionRoutedEventArgs e)
@@ -210,8 +222,10 @@ namespace PhoneApp
                 if (captureSource.VideoCaptureDevice != null
                 && captureSource.State == CaptureState.Started)
                 {
+                    // stop the timer
+                    newTimer.Stop();
+
                     captureSource.Stop();
-                    captureScreenshots = false;
                     // Disconnect fileSink.
                     fileSink.CaptureSource = null;
                     fileSink.IsolatedStorageFileName = null;
