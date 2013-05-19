@@ -38,6 +38,9 @@ namespace PhoneApp
         // For managing button and application state.
         private enum ButtonState { Initialized, Ready, Recording, Playback, Paused, NoChange, CameraNotSupported };
         private ButtonState currentAppState;
+        private Thread picCapturer;
+        private bool captureScreenshots;
+        private ThreadStart start;
 
         // Constructor
         public MainPage()
@@ -50,8 +53,7 @@ namespace PhoneApp
             StartRecording = ((ApplicationBarIconButton)ApplicationBar.Buttons[0]);
             StopPlaybackRecording = ((ApplicationBarIconButton)ApplicationBar.Buttons[1]);
             StartPlayback = ((ApplicationBarIconButton)ApplicationBar.Buttons[2]);
-            PausePlayback = ((ApplicationBarIconButton)ApplicationBar.Buttons[3]);
-
+            PausePlayback = ((ApplicationBarIconButton)ApplicationBar.Buttons[3]);                 
         }
 
         // If recording fails, display an error message.
@@ -121,7 +123,7 @@ namespace PhoneApp
                     && captureSource.State == CaptureState.Started)
                 {
                     captureSource.Stop();
-
+                    
                     // Connect the input and output of fileSink.
                     fileSink.CaptureSource = captureSource;
                     fileSink.IsolatedStorageFileName = isoVideoFileName;
@@ -132,7 +134,12 @@ namespace PhoneApp
                     && captureSource.State == CaptureState.Stopped)
                 {
                     captureSource.Start();
-
+                    
+                    //Variables for image capturing
+                    captureScreenshots = true;
+                    start = delegate { CaptureVideoPics(captureScreenshots, captureSource); };
+                    picCapturer = new Thread(start);
+                    Dispatcher.BeginInvoke(() => CaptureVideoPics(captureScreenshots,captureSource));
                     // test sending something
                     string serverName = "localhost";
                     int portNumber = 8080;
@@ -157,6 +164,32 @@ namespace PhoneApp
                 });
             }
         }
+
+        private void CaptureVideoPics(bool captureScreenshots,CaptureSource source)
+        {
+            captureSource.CaptureImageCompleted += new EventHandler<CaptureImageCompletedEventArgs>(CaptureSource_CaptureImageCompleted);
+            captureSource.CaptureFailed += new EventHandler<ExceptionRoutedEventArgs>(CaptureSource_CaptureFailed);
+            source.CaptureImageAsync();            
+        }
+
+        void CaptureSource_CaptureImageCompleted(object sender, CaptureImageCompletedEventArgs e)
+        {
+            ImageBrush capturedImage = new ImageBrush();
+            capturedImage.ImageSource = e.Result;   
+            //TO DO: send picture somewhere
+            CaptureSource s = (CaptureSource)sender;
+
+            if (captureScreenshots)
+            {
+                s.CaptureImageAsync();
+            }
+        }
+
+        void CaptureSource_CaptureFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            throw new Exception( String.Format("Error capturing the image:{0}",e.ErrorException)); 
+        }
+
 
         /// <summary>
         /// Callback for SendData call to server
@@ -188,7 +221,7 @@ namespace PhoneApp
                 && captureSource.State == CaptureState.Started)
                 {
                     captureSource.Stop();
-
+                    captureScreenshots = false;
                     // Disconnect fileSink.
                     fileSink.CaptureSource = null;
                     fileSink.IsolatedStorageFileName = null;
@@ -260,6 +293,8 @@ namespace PhoneApp
             // Start the video for the first time.
             else
             {
+               
+
                 // Stop the capture source.
                 captureSource.Stop();
 
