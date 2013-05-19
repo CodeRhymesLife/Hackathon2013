@@ -177,13 +177,17 @@ namespace PhoneApp
             
             CaptureSource s = (CaptureSource)sender;
 
+            // convert stream to string
+            targetStream.Seek(0, SeekOrigin.Begin);
+            StreamReader reader = new StreamReader(targetStream);
+            string imageStream = reader.ReadToEnd();
+
             // TODO: CHANGE THIS TO YOUR LOCAL MACHINE IP
             string domain = "169.254.80.80";
             int port = 4242;
             string url = string.Format("http://{0}:{1}/image", domain, port);
-            string postBody = string.Format(@"{{""name"":""{0}""}}", "TODO_UPDATE_THIS_TO_BE_THE_IMAGE");
 
-            Post(url, postBody, webResponseCallback);
+            Post(url, imageStream, webResponseCallback);
 
             if (captureScreenshots)
             {
@@ -486,8 +490,7 @@ namespace PhoneApp
             Uri uri = new Uri(address);
             HttpWebRequest r = (HttpWebRequest)WebRequest.Create(uri);
             r.Method = "POST";
-            // TODO: change to png when image support is added
-            r.ContentType = "application/json";
+            r.ContentType = "image/jpeg";
 
             r.BeginGetRequestStream(delegate(IAsyncResult req)
             {
