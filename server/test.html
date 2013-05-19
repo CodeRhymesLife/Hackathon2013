@@ -33,8 +33,13 @@
                 }
 
                 // Set the image
-                if (evt.data != null) {		
+                if (evt.data != null) {
+                    if (evt.data == "stop") {
+                        alert("Feed stopped!");
+                    }
+                    else {
                         img.src = "data:image/jpeg;base64," + evt.data;	//log('got' + evt.data);
+                    }
                 }
             };
 
