@@ -72,6 +72,7 @@ app.configure(function () {
 });
 
 app.get('/stop', function (req, res) {
+    sys.debug("Stopping listeners");
     sendToClients("stop");
 
     return res.send();
