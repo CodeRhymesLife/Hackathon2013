@@ -2,12 +2,14 @@
     display: -ms-grid;
     -ms-grid-columns: 1fr;
     -ms-grid-rows: 1fr;
-    height: 100%;
-    background-color: #353535;
-    opacity: 0.7;
-    position: fixed;
+    background-color: #000;
+    opacity: 0.95;
     width: 100%;
-    z-index: 1;
+    height: 100%;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 2;
 }
 
 #glimpse {
@@ -15,6 +17,4 @@
     -ms-grid-column: 1;
     -ms-grid-column-align: center;
     -ms-grid-row-align: center;
-    padding: 20px;
-    background-color: #fff;
 }
