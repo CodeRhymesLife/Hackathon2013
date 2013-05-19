@@ -6,9 +6,10 @@
     <script type="text/javascript">
         var img;
 
+        var domain = "glimpse.cloudapp.net";
         // Web socket connection stuff is next...	
         if ('WebSocket' in window) {
-            connect('ws://localhost:4502/');
+            connect('ws://' + domain + ':4502/');
         } else {
             log ('web sockets not supported');
         }
