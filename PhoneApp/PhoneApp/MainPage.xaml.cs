@@ -17,6 +17,11 @@ using System.IO.IsolatedStorage;
 using Microsoft.Devices;
 using System.Windows.Media;
 using System.Text;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+
+
+
 
 
 namespace PhoneApp
@@ -166,8 +171,10 @@ namespace PhoneApp
         void CaptureSource_CaptureImageCompleted(object sender, CaptureImageCompletedEventArgs e)
         {
             ImageBrush capturedImage = new ImageBrush();
-            capturedImage.ImageSource = e.Result;   
-            //TO DO: send picture somewhere
+            WriteableBitmap map = e.Result;
+            Stream targetStream = new MemoryStream();
+            map.SaveJpeg(targetStream,480,640,0,100);
+            
             CaptureSource s = (CaptureSource)sender;
 
             // TODO: CHANGE THIS TO YOUR LOCAL MACHINE IP
