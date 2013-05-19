@@ -4,6 +4,8 @@
     <div id="msg"></div>
     <div id="log"></div>
     <script type="text/javascript">
+        var img;
+
         // Web socket connection stuff is next...	
         if ('WebSocket' in window) {
             connect('ws://localhost:4502/');
@@ -20,7 +22,7 @@
             };
 
             ws.onmessage = function (evt) {
-                //var msg = document.getElementById("msg").innerText = evt.data;
+                var msg = document.getElementById("msg").innerText = evt.data;
 
                 if (!img) {
                     img = document.getElementById("frame");
