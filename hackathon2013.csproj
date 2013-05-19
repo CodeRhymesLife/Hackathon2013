@@ -41,6 +41,40 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="server\node_modules\websocket\index.js" />
+    <Content Include="server\node_modules\websocket\install.js" />
+    <Content Include="server\node_modules\websocket\lib\Constants.js" />
+    <Content Include="server\node_modules\websocket\lib\Deprecation.js" />
+    <Content Include="server\node_modules\websocket\lib\utils.js" />
+    <Content Include="server\node_modules\websocket\lib\Validation.fallback.js" />
+    <Content Include="server\node_modules\websocket\lib\Validation.js" />
+    <Content Include="server\node_modules\websocket\lib\websocket.js" />
+    <Content Include="server\node_modules\websocket\lib\WebSocketClient.js" />
+    <Content Include="server\node_modules\websocket\lib\WebSocketConnection.js" />
+    <Content Include="server\node_modules\websocket\lib\WebSocketFrame.js" />
+    <Content Include="server\node_modules\websocket\lib\WebSocketRequest.js" />
+    <Content Include="server\node_modules\websocket\lib\WebSocketRouter.js" />
+    <Content Include="server\node_modules\websocket\lib\WebSocketRouterRequest.js" />
+    <Content Include="server\node_modules\websocket\lib\WebSocketServer.js" />
+    <Content Include="server\node_modules\websocket\lib\xor.fallback.js" />
+    <Content Include="server\node_modules\websocket\lib\xor.js" />
+    <Content Include="server\node_modules\websocket\src\validation.cc" />
+    <Content Include="server\node_modules\websocket\src\xor.cpp" />
+    <Content Include="server\node_modules\websocket\vendor\FastBufferList.js" />
+    <Content Include="server\node_modules\websocket\vendor\node-ctype\ctio-faster.js" />
+    <Content Include="server\test.html" />
+    <Content Include="server\websocketserver.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="server\node_modules\websocket\binding.gyp" />
+    <None Include="server\node_modules\websocket\CHANGELOG.md" />
+    <None Include="server\node_modules\websocket\LICENSE" />
+    <None Include="server\node_modules\websocket\Makefile" />
+    <None Include="server\node_modules\websocket\package.json" />
+    <None Include="server\node_modules\websocket\README.md" />
+    <None Include="server\node_modules\websocket\vendor\node-ctype\LICENSE" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
