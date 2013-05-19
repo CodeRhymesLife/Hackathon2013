@@ -4,9 +4,14 @@ var WebSocketServer = require('ws').Server
 
 var clients = {};
 var clientIDCounter = 0;
+var frozen = false;
 function sendToClients(msg) {
+    if (frozen) {
+        return;
+    }
+
     for (key in clients) {
-        try{
+        try {
             clients[key].send(msg);
         } catch (e) {
             sys.debug("Failed to send message to client " + key + ". Removing from colleciton");
@@ -71,9 +76,21 @@ app.configure(function () {
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
+var timeoutKey = null;
 app.post('/stop', function (req, res) {
     sys.debug("Stopping listeners");
     sendToClients("stop");
+
+    // Freeze sending info to clients
+    frozen = true;
+
+    if (timeoutKey) {
+        clearTimeout(timeoutKey);
+        timeoutKey = null;
+    }
+
+    // Freeze clients for 5 sec
+    timeoutKey = setTimeout(function () { frozen = false }, 5 * 1000);
 
     return res.send();
 });
@@ -81,7 +98,7 @@ app.post('/stop', function (req, res) {
 app.post('/image', function (req, res) {
     debugger;
     var product;
-    
+
     // handle incoming data
     // send data to ALL clients whenever ANY client send up data
     var imageData = req.body;
