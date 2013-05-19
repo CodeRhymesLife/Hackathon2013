@@ -172,22 +172,23 @@ namespace PhoneApp
         {
             ImageBrush capturedImage = new ImageBrush();
             WriteableBitmap map = e.Result;
-            Stream targetStream = new MemoryStream();
+            var targetStream = new MemoryStream();
             map.SaveJpeg(targetStream,480,640,0,100);
             
             CaptureSource s = (CaptureSource)sender;
 
             // convert stream to string
             targetStream.Seek(0, SeekOrigin.Begin);
-            StreamReader reader = new StreamReader(targetStream);
-            string imageStream = reader.ReadToEnd();
+            string imageStream = Convert.ToBase64String(targetStream.ToArray());
 
             // TODO: CHANGE THIS TO YOUR LOCAL MACHINE IP
             string domain = "169.254.80.80";
             int port = 4242;
             string url = string.Format("http://{0}:{1}/image", domain, port);
 
-            Post(url, imageStream, webResponseCallback);
+            string postBody = string.Format(@"{{""img"":""{0}""}}", imageStream);
+
+            Post(url, postBody, webResponseCallback);
 
             if (captureScreenshots)
             {
@@ -490,7 +491,7 @@ namespace PhoneApp
             Uri uri = new Uri(address);
             HttpWebRequest r = (HttpWebRequest)WebRequest.Create(uri);
             r.Method = "POST";
-            r.ContentType = "image/jpeg";
+            r.ContentType = "application/json";
 
             r.BeginGetRequestStream(delegate(IAsyncResult req)
             {

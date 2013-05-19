@@ -58,7 +58,7 @@ app.post('/image', function (req, res) {
     // send data to ALL clients whenever ANY client send up data
     var imageData = req.body;
     for (var i = 0 ; i < clients.length ; i++) {
-        clients[i].send(imageData);
+        clients[i].send(imageData.img);
     }
 
     return res.send();
