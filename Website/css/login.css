@@ -1,0 +1,19 @@
+﻿#loginWrapper {
+    display: -ms-grid;
+    -ms-grid-columns: 1fr;
+    -ms-grid-rows: 1fr;
+    height: 100%;
+    background: #353535 url(/images/background.jpg) no-repeat fixed center;
+    background-size: cover;
+}
+
+#login {
+    -ms-grid-row: 1;
+    -ms-grid-column: 1;
+    -ms-grid-column-align: center;
+    -ms-grid-row-align: center;
+}
+
+#loginButton {
+    cursor:pointer;
+}

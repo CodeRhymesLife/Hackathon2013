@@ -1,0 +1,117 @@
+﻿html, body {
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Segoe UI';
+    font-size: 18px;
+    color: #353535;
+    height: 100%;
+    overflow: hidden;
+    background-color: #555;
+}
+
+#wrapper {
+    height: 100%;
+    background-color: #353535;
+    display: -ms-grid;
+    -ms-grid-rows: auto 1fr auto;
+    -ms-grid-columns: 100%;
+}
+
+#header {
+    background-color: #353535;
+    color: #52ade7;
+    -ms-grid-row: 1;
+    display: -ms-grid;
+    -ms-grid-columns: 1fr 1fr 1fr;
+    font-family: 'Segoe UI';
+}
+
+#brand {
+    -ms-grid-column: 1;
+    -ms-grid-row-align: center;
+    display: -ms-grid;
+    -ms-grid-columns: auto auto;
+}
+
+    #brand img {
+        -ms-grid-column: 1;
+    }
+
+#tagline {
+    color: #ccc;
+    -ms-grid-column: 2;
+    -ms-grid-row-align: center;
+    margin: 0px 15px;
+    white-space: nowrap;
+}
+
+#search {
+    -ms-grid-column: 2;
+    text-align: center;
+    -ms-grid-row-align: center;
+}
+
+#searchbox {
+    padding: 2px 5px;
+    border-radius: 5px;
+    border-width: 0px;
+    width: 250px;
+    font-size: 18px;
+    background-color: #CCC;
+}
+
+#identity {
+    -ms-grid-column: 3;
+    -ms-grid-column-align: end;
+    -ms-grid-row-align: center;
+    display: -ms-grid;
+    -ms-grid-columns: auto auto;
+}
+
+    #identity #name {
+        margin: 0px 10px;
+        -ms-grid-column: 1;
+        -ms-grid-row-align: center;
+        color: #ccc;
+        white-space: nowrap;
+    }
+
+    #identity img {
+        -ms-grid-column: 2;
+        width: 30px;
+        height: 30px;
+    }
+
+#content {
+    -ms-grid-row: 2;
+}
+
+#mosaic {
+    display: -ms-grid;
+    -ms-grid-columns: (1fr)[4];
+    -ms-grid-rows: (1fr)[3];
+    height: 100%;
+    /*background: #353535 url(/images/background.jpg) no-repeat fixed center;
+    background-size: cover;*/
+}
+
+.lightMosaicTile {
+    height: 100%;
+    background-color:#52ade7;
+    /*background-color: rgba(82, 173, 231, 0.5);*/
+}
+
+.darkMosaicTile {
+    height: 100%;
+    background-color: #555;
+    /*background-color: rgba(82, 173, 231, 0.9);*/
+}
+
+#footer {
+    color: #fff;
+    text-align: center;
+    background-color: #353535;
+    padding: 2px 0px;
+    -ms-grid-row: 3;
+    font-size: 12px;
+}
