@@ -63,7 +63,9 @@
     <Content Include="server\node_modules\websocket\src\xor.cpp" />
     <Content Include="server\node_modules\websocket\vendor\FastBufferList.js" />
     <Content Include="server\node_modules\websocket\vendor\node-ctype\ctio-faster.js" />
+    <Content Include="server\simpleServer.js" />
     <Content Include="server\test.html" />
+    <Content Include="server\testVideo.html" />
     <Content Include="server\websocketserver.js" />
   </ItemGroup>
   <ItemGroup>
@@ -75,6 +77,7 @@
     <None Include="server\node_modules\websocket\README.md" />
     <None Include="server\node_modules\websocket\vendor\node-ctype\LICENSE" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
