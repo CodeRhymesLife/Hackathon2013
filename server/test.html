@@ -66,7 +66,7 @@
     <input type="button" value="Send" onclick="sendData();" />
 
     <video autoplay id="vid"></video>
-    <canvas id="canvas" style="display:none;"></canvas>
+    <canvas id="canvas" style="display:none;" height="640" width="480"></canvas>
 
     <script type="text/javascript">
 
@@ -79,17 +79,8 @@
             console.log('Camera did not work.', e);
         };
 
-        var setWidthHeight = false;
-
         function snapshot() {
             if (localMediaStream) {
-                if (!setWidthHeight) {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    //video.style.display = "none";
-                    setWidthHeight = true;
-                }
-
                 ctx.drawImage(video, 0, 0);
 
                 // "image/webp" works in Chrome 18. In other browsers, this will fall back to image/png.
@@ -112,11 +103,12 @@
         }, onCameraFail);
 
         var intervalId = null;
+        var timesPerSec = 1;
         function capture() {
             intervalId = setTimeout(function () {
                 snapshot();
                 capture();
-            }, 1000 / 60);
+            }, 1000 / timesPerSec);
         }
 
     </script>
