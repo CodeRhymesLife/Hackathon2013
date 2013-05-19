@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <video autoplay id="vid"></video>
+    <img src="">
+    <canvas id="canvas" style="display:none;"></canvas>
+    <button onclick="snapshot()">Take Picture</button>
+
+    <script type="text/javascript">
+
+        var video = document.querySelector("#vid");
+        var canvas = document.querySelector('#canvas');
+        var ctx = canvas.getContext('2d');
+        var localMediaStream = null;
+
+        var onCameraFail = function (e) {
+            console.log('Camera did not work.', e);
+        };
+
+        function snapshot() {
+            if (localMediaStream) {
+                ctx.drawImage(video, 0, 0);
+
+                // "image/webp" works in Chrome 18. In other browsers, this will fall back to image/png.
+                document.querySelector('img').src = canvas.toDataURL('image/webp');
+            }
+        }
+
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        window.URL = window.URL || window.webkitURL;
+        navigator.getUserMedia({ video: true }, function (stream) {
+            video.src = window.URL.createObjectURL(stream);
+            localMediaStream = stream;
+
+            video.onloadedmetadata = function (e) {
+                console.log(e.msg);
+            };
+        }, onCameraFail);
+
+    </script>
+</body>
+</html>

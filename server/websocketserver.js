@@ -1,6 +1,6 @@
 ﻿var sys = require("sys");
 var WebSocketServer = require('ws').Server
-  , wss = new WebSocketServer({ port: 8080 });
+  , wss = new WebSocketServer({ port: 4502 });
 
 var clients = [];
 wss.on('connection', function (ws) {
@@ -26,3 +26,8 @@ wss.on('connection', function (ws) {
 
     ws.send('something');
 });
+
+var connect = require('connect');
+connect.createServer(
+    connect.static(__dirname)
+).listen(8080);

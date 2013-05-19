@@ -1,6 +1,6 @@
 <html>
 <body>
-    <img src="" id="frame" style="width: 240px; height: 400px" />
+    <img id="frame" src="">
     <div id="msg"></div>
     <div id="log"></div>
     <script type="text/javascript">
@@ -16,7 +16,7 @@
 
         // Web socket connection stuff is next...	
         if ('WebSocket' in window) {
-            connect('ws://localhost:8080/');
+            connect('ws://localhost:4502/');
         } else {
             log ('web sockets not supported');
         }
@@ -31,10 +31,15 @@
 
             ws.onmessage = function (evt) {
                 var msg = document.getElementById("msg").innerText = evt.data;
-                /*if (evt.data != null) {		
+
+                if (!img) {
+                    img = document.getElementById("frame");
+                }
+
+                if (evt.data != null) {		
                     if ((evt.data[0] === "d") && (evt.data[1] === "a"))
                         img.src = evt.data;	//log('got' + evt.data);
-                }*/
+                }
             };
 
             ws.onclose = function () {
@@ -59,5 +64,61 @@
 
     <input id="dataToSend" type="text"/>
     <input type="button" value="Send" onclick="sendData();" />
+
+    <video autoplay id="vid"></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <script type="text/javascript">
+
+        var video = document.querySelector("#vid");
+        var canvas = document.querySelector('#canvas');
+        var ctx = canvas.getContext('2d');
+        var localMediaStream = null;
+
+        var onCameraFail = function (e) {
+            console.log('Camera did not work.', e);
+        };
+
+        var setWidthHeight = false;
+
+        function snapshot() {
+            if (localMediaStream) {
+                if (!setWidthHeight) {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    //video.style.display = "none";
+                    setWidthHeight = true;
+                }
+
+                ctx.drawImage(video, 0, 0);
+
+                // "image/webp" works in Chrome 18. In other browsers, this will fall back to image/png.
+                var imageData = canvas.toDataURL('image/webp');
+                ws.send(imageData);
+            }
+        }
+
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        window.URL = window.URL || window.webkitURL;
+        navigator.getUserMedia({ video: true }, function (stream) {
+            video.src = window.URL.createObjectURL(stream);
+            localMediaStream = stream;
+
+            video.onloadedmetadata = function (e) {
+                console.log(e.msg);
+            };
+
+            capture();
+        }, onCameraFail);
+
+        var intervalId = null;
+        function capture() {
+            intervalId = setTimeout(function () {
+                snapshot();
+                capture();
+            }, 1000 / 60);
+        }
+
+    </script>
 </body>
 </html>
