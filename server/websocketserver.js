@@ -71,7 +71,7 @@ app.configure(function () {
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-app.get('/stop', function (req, res) {
+app.post('/stop', function (req, res) {
     sys.debug("Stopping listeners");
     sendToClients("stop");
 

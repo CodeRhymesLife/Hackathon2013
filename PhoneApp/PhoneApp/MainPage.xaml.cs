@@ -17,7 +17,6 @@ using System.IO.IsolatedStorage;
 using Microsoft.Devices;
 using System.Windows.Media;
 using System.Text;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
@@ -47,6 +46,11 @@ namespace PhoneApp
         private Thread picCapturer;
         private bool capturingScreenshots;
         private ThreadStart start;
+
+        // connection info for sending to server
+        static bool debug = false;
+        private static string domain = debug ? "169.254.80.80" : "glimpse.cloudapp.net";
+        private static int port = 4242;
 
         // creating timer instance
         DispatcherTimer newTimer = new DispatcherTimer();
@@ -198,12 +202,9 @@ namespace PhoneApp
             targetStream.Seek(0, SeekOrigin.Begin);
             string imageStream = Convert.ToBase64String(targetStream.ToArray());
 
-            // TODO: CHANGE THIS TO YOUR LOCAL MACHINE IP
-            string domain = "glimpse.cloudapp.net";
-            int port = 4242;
-            string url = string.Format("http://{0}:{1}/image", domain, port);
-
             string postBody = string.Format(@"{{""img"":""{0}""}}", imageStream);
+
+            string url = string.Format("http://{0}:{1}/image", domain, port);
 
             Post(url, postBody, webResponseCallback);
 
@@ -226,6 +227,13 @@ namespace PhoneApp
                 {
                     // stop the timer
                     newTimer.Stop();
+
+                    // send stop to the server
+                    string url = string.Format("http://{0}:{1}/stop", domain, port);
+
+                    string postBody = @"{""ignored"":""post body is ignored, just putting something to reuse same post function""}";
+
+                    Post(url, postBody, webResponseCallback);
 
                     captureSource.Stop();
                     // Disconnect fileSink.
@@ -500,6 +508,7 @@ namespace PhoneApp
         private void webResponseCallback(string val)
         {
             // TODO: do something with response
+            //   Note: This is the callback for all web requests
         }
 
         public void Post(string address, string parameters, Action<string> onResponseGot)
