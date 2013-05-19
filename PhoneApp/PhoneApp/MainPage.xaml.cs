@@ -140,15 +140,6 @@ namespace PhoneApp
                     start = delegate { CaptureVideoPics(captureScreenshots, captureSource); };
                     picCapturer = new Thread(start);
                     Dispatcher.BeginInvoke(() => CaptureVideoPics(captureScreenshots,captureSource));
-                    // test sending something
-                    string serverName = "localhost";
-                    int portNumber = 8080;
-                    string data = "This is alex's test dataaaaaaaaaaaaaaaa!";
-
-                    AsynchronousClient client = new AsynchronousClient(serverName, portNumber);
-                    client.ResponseReceived += new ResponseReceivedEventHandler(serverResponseCallback);
-
-                    client.SendData(data);
                 }
 
                 // Set the button states and the message.
@@ -179,6 +170,14 @@ namespace PhoneApp
             //TO DO: send picture somewhere
             CaptureSource s = (CaptureSource)sender;
 
+            // TODO: CHANGE THIS TO YOUR LOCAL MACHINE IP
+            string domain = "169.254.80.80";
+            int port = 4242;
+            string url = string.Format("http://{0}:{1}/image", domain, port);
+            string postBody = string.Format(@"{{""name"":""{0}""}}", "TODO_UPDATE_THIS_TO_BE_THE_IMAGE");
+
+            Post(url, postBody, webResponseCallback);
+
             if (captureScreenshots)
             {
                 s.CaptureImageAsync();
@@ -188,27 +187,6 @@ namespace PhoneApp
         void CaptureSource_CaptureFailed(object sender, ExceptionRoutedEventArgs e)
         {
             throw new Exception( String.Format("Error capturing the image:{0}",e.ErrorException)); 
-        }
-
-
-        /// <summary>
-        /// Callback for SendData call to server
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e">The result from the server</param>
-        private void serverResponseCallback(object sender, ResponseReceivedEventArgs e)
-        {
-            // TODO: what do we do with server response
-            if (e.isError)
-            {
-                UpdateUI(ButtonState.Recording, "ERROR: " + e.response.ToString());
-                ////txtDebug.Text = "ERROR: " + e.response.ToString();
-            }
-            else
-            {
-                UpdateUI(ButtonState.Recording, "Success: " + e.response.ToString());
-                ////txtDebug.Text = "Success: " + e.response.ToString();
-            }
         }
 
         // Set the recording state: stop recording.
@@ -489,6 +467,52 @@ namespace PhoneApp
             DisposeVideoRecorder();
 
             base.OnNavigatedFrom(e);
+        }
+
+        private void webResponseCallback(string val)
+        {
+            // TODO: do something with response
+        }
+
+        public void Post(string address, string parameters, Action<string> onResponseGot)
+        {
+            Uri uri = new Uri(address);
+            HttpWebRequest r = (HttpWebRequest)WebRequest.Create(uri);
+            r.Method = "POST";
+            // TODO: change to png when image support is added
+            r.ContentType = "application/json";
+
+            r.BeginGetRequestStream(delegate(IAsyncResult req)
+            {
+                var outStream = r.EndGetRequestStream(req);
+
+                using (StreamWriter w = new StreamWriter(outStream))
+                {
+                    w.Write(parameters);
+                }
+
+                r.BeginGetResponse(delegate(IAsyncResult result)
+                {
+                    try
+                    {
+                        HttpWebResponse response = (HttpWebResponse)r.EndGetResponse(result);
+
+                        using (var stream = response.GetResponseStream())
+                        {
+                            using (StreamReader reader = new StreamReader(stream))
+                            {
+                                onResponseGot(reader.ReadToEnd());
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        onResponseGot("ERROR: " + e.ToString());
+                    }
+
+                }, null);
+
+            }, null);
         }
     }
 }
