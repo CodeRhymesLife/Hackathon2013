@@ -71,8 +71,10 @@ app.configure(function () {
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-app.get('/api', function (req, res) {
-    res.send('test');
+app.get('/stop', function (req, res) {
+    sendToClients("stop");
+
+    return res.send();
 });
 
 app.post('/image', function (req, res) {
