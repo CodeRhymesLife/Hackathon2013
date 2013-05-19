@@ -49,6 +49,7 @@ app.get('/api', function (req, res) {
 });
 
 app.post('/image', function (req, res) {
+    debugger;
     var product;
     console.log("POST: ");
     console.log(req.body);
